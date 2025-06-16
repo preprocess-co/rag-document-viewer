@@ -349,7 +349,7 @@ def serve_my_document(doc_id, asset="index.html"):
 ---
 
 ## Support
-Contact the Preprocess team at `support@preprocess.co` or join our [Discord channel]().
+Contact the Preprocess team at `support@preprocess.co` or join our [Discord channel](https://discord.gg/7G5xqsZmGu).
 
 ## License
 
