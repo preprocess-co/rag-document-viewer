@@ -1,0 +1,202 @@
+@keyframes steam {
+    0% {
+        background-position: 0 0;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
+}
+
+
+*::selection {
+    background: unset;
+    background-color: {#_text_selection_color_#};
+}
+
+
+#page-container {
+    background-color: {#_background_#};
+    background-image: unset;
+    -webkit-transition: left 500ms;
+    transition: left 500ms;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    position: absolute;
+    height: 100%;
+}
+
+
+#page-container::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+
+.pf {
+    margin: 13px auto;
+    box-shadow: {#_page_shadow_#};
+    border-collapse: separate;
+}
+
+
+.t {
+    z-index: 10;
+}
+
+.btn {
+    margin: 0.5rem;
+}
+
+.btn-link {
+    cursor: pointer;
+}
+
+.highlight.text {
+    background-image: {#_highlight_chunk_color_#};
+    padding: 0.2rem;
+    margin: -0.2rem;
+}
+
+.disabled {
+    /* Disable pointer events completely */
+    pointer-events: none;
+
+    /* Visual feedback that it's disabled */
+    opacity: 0.6;
+    cursor: not-allowed;
+
+    /* Prevent text selection */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Remove hover effects when disabled */
+.disabled:hover {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.highlight.slide {
+    background-image: {#_highlight_page_color_#};
+    outline: solid 10px {#_highlight_page_outline_#};
+    outline-offset: -4px;
+    border-radius: 10px;
+}
+
+
+.draw-box {
+    display: block;
+    position: absolute;
+    background-size: 300%;
+    animation: steam 10s linear infinite;
+}
+
+#navigator {
+    position: fixed;
+    top: 1rem;
+    background-color: {#_controls_bg_color_#};
+    padding: 5px 0px;
+    width: 15rem;
+    border-radius: 5px;
+    color: {#_controls_text_color_#};
+    z-index: 2000;
+    font-size: 13px;
+    text-align: center;
+    left: calc(50% - 7.5rem);
+    display: none;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+#page-number {
+    position: fixed;
+    bottom: 1rem;
+    background-color: {#_controls_bg_color_#};
+    padding: 5px 0px;
+    border-radius: 5px;
+    color: {#_controls_text_color_#};
+    z-index: 2000;
+    font-size: 13px;
+    width: 5rem;
+    text-align: center;
+    left: calc(50% - 2.5rem);
+    display: none;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+
+.zoom {
+    position: fixed;
+    bottom: 1rem;
+    background-color: {#_controls_bg_color_#};
+    padding: 5px 0px;
+    border-radius: 5px;
+    color: {#_controls_text_color_#};
+    z-index: 2000;
+    font-size: 13px;
+    width: 2.5rem;
+    text-align: center;
+    display: none;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+
+#zoom-in {
+    right: calc(45% - 1.25rem);
+}
+
+
+#zoom-out {
+    left: calc(45% - 1.25rem);
+}
+
+
+#scrollbar {
+    display: block;
+    background: {#_scrollbar_#};
+    width: 20px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    right: 0;
+    border-radius: 10px;
+    z-index: 2000;
+}
+
+
+#scroller {
+    background: {#_scroller_#};
+    height: 3vh;
+    min-height: 10px;
+    width: 70%;
+    position: absolute;
+    left: 15%;
+    border-radius: 10px;
+    top: 5px;
+    z-index: 2001;
+}
+
+
+.scroll-bookmark {
+    background: {#_bookmark_#};
+    height: 5px;
+    width: 70%;
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    border-radius: 10px;
+}
+
+.scroll-bookmark:hover {
+    width: 170%;
+    left: -100%;
+}
