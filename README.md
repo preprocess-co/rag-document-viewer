@@ -11,9 +11,6 @@ The library converts these files into interactive HTML-based previews that can b
 *Developed by [Preprocess Team](https://preprocess.co)*
 
 ## How it works
-
-![RAG Document Viewer Demo](previewer.png)
-
 -   Pass in a file and specify the destination path.
 -   An HTML bundle is created.
 -   You can now embed the viewer in your application with just an `<iframe>`.
@@ -28,10 +25,12 @@ The library converts these files into interactive HTML-based previews that can b
 
 **Viewer features:**
 
-1.  **Zoom Controls**: Renders the document at the optimal zoom level, and users can zoom in/out as needed.
-2.  **Chunks Highlighting** - Visual emphasis of the important content part you select.
-3.  **Chunk Navigator**: Navigate between highlighted chunks with next/previous controls.
-4.  **Scrollbar Navigator**: Visual indicators on the scrollbar show highlighted chunk positions; click to jump to a specific chunk.
+1.  **Chunk Navigator**: Navigate between highlighted chunks with next/previous controls.
+2.  **Zoom Controls**: Renders the document at the optimal zoom level, and users can zoom in/out as needed.
+3.  **Scrollbar Navigator**: Visual indicators on the scrollbar show highlighted chunk positions; click to jump to a specific chunk.
+4.  **Chunks Highlighting** - Visual emphasis of the important content part you select.
+
+![RAG Document Viewer Demo](previewer.png)
 
 ---
 
@@ -125,7 +124,7 @@ You can get chunk coordinates from chunking providers like [Preprocess.co](https
 
 > **Note**: Chunks' coordinates should be stored in a list. When storing and then accessing a chunk, you should use the list index to reference the correct chunk.
 
-**With the [Preprocess SDK](https://pypi.org/project/pypreprocess/)**
+**With the [Preprocess SDK](https://github.com/preprocess-co/pypreprocess)**
 ```python
 from pypreprocess import Preprocess
 from rag_document_viewer import RAG_DV
@@ -226,18 +225,18 @@ Customize the viewer's colors to match your branding.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| main_color | str | '#ff8000' | Primary color for interactive elements |
-| background_color | str | '#dddddd' | Viewer background color |
-| page_shadow | str | None | CSS `box-shadow` for pages (auto-calculated if not set) |
-| text_selection_color | str | None | Browser text selection color for the viewer (auto-calculated if not set) |
-| controls_text_color | str | None | Text color of viewer controls, like zoom and page number (auto-calculated if not set) |
-| controls_bg_color | str | None | Background color of viewer controls, like zoom and page number (auto-calculated if not set) |
-| scrollbar_color | str | None | Scrollbar background color (auto-calculated if not set) |
-| scroller_color | str | None | Scrollbar thumb color (auto-calculated if not set) |
-| bookmark_color | str | None | Color for relevant chunk indicators in the scrollbar (defaults to main_color) |
-| highlight_chunk_color | str | None | CSS `background-image` for chunk highlight (auto-calculated if not set) |
-| highlight_page_color | str | None | CSS `background-image` for page highlight (auto-calculated if not set) |
-| highlight_page_outline | str | None | Page border color for highlighted pages (auto-calculated if not set) |
+| `main_color` | `str` | `#ff8000` | Primary color for interactive elements |
+| `background_color` | `str` | `#dddddd` | Viewer background color |
+| `page_shadow` | `str` | `None` | CSS `box-shadow` for pages (auto-calculated if not set) |
+| `text_selection_color` | `str` | `None` | Browser text selection color for the viewer (auto-calculated if not set) |
+| `controls_text_color` | `str` | `None` | Text color of viewer controls, like zoom and page number (auto-calculated if not set) |
+| `controls_bg_color` | `str` | `None` | Background color of viewer controls, like zoom and page number (auto-calculated if not set) |
+| `scrollbar_color` | `str` | `None` | Scrollbar background color (auto-calculated if not set) |
+| `scroller_color` | `str` | `None` | Scrollbar thumb color (auto-calculated if not set) |
+| `bookmark_color` | `str` | `None` | Color for relevant chunk indicators in the scrollbar (defaults to main_color) |
+| `highlight_chunk_color` | `str` | `None` | CSS `background-image` for chunk highlight (auto-calculated if not set) |
+| `highlight_page_color` | `str` | `None` | CSS `background-image` for page highlight (auto-calculated if not set) |
+| `highlight_page_outline` | `str` | `None` | Page border color for highlighted pages (auto-calculated if not set) |
 
 **Example**
 ```python
@@ -255,7 +254,7 @@ RAG_DV(
 ### Displaying the Viewer
 Add an `<iframe>` to your application to show the document.
 
-> **Important**: The content must be served via HTTP/S. Opening the `index.html` directly from the local filesystem (`file://`) is not fully supported and may cause issues.
+> ### **⚠️ Important**: The content must be served via HTTP/S. Opening the `index.html` directly from the local filesystem (`file://`) is not fully supported and may cause issues.
 
 ```html
 <iframe
