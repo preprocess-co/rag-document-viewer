@@ -39,7 +39,6 @@ The library converts these files into interactive HTML-based previews that can b
 
 **1. Install Dependencies**
 ```bash
-# <!-- TODO: Add final URL for the install script -->
 wget "https://raw.githubusercontent.com/preprocess-co/rag-document-viewer/refs/heads/main/install.sh"
 chmod +x install.sh && ./install.sh
 ```
@@ -79,7 +78,6 @@ Before you start, make sure the required system dependencies are installed. An `
 
 Install the required libraries:
 ```bash
-# <!-- TODO: Add final URL for the install script -->
 wget "https://raw.githubusercontent.com/preprocess-co/rag-document-viewer/refs/heads/main/install.sh"
 chmod +x install.sh && ./install.sh
 ```
@@ -351,7 +349,7 @@ def serve_my_document(doc_id, asset="index.html"):
 ---
 
 ## Support
-Contact the Preprocess team at `support@preprocess.co` or join our [Discord channel](). <!-- TODO: Add link -->
+Contact the Preprocess team at `support@preprocess.co` or join our [Discord channel]().
 
 ## License
 

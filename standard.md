@@ -100,7 +100,7 @@ poetry install
 
 ## Quick Start and Basic Usage
 
-For quick start instructions and basic usage examples, please refer to the [main documentation](./readme_final.md#quick-start).
+For quick start instructions and basic usage examples, please refer to the [main documentation](./README.md#quick-start).
 
 ---
 
