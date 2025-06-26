@@ -1,4 +1,4 @@
-# RAG Document Viewer ![V1.0](https://img.shields.io/badge/Version-1.0-333.svg?labelColor=eee) ![MIT License](https://img.shields.io/badge/License-MIT-333.svg?labelColor=eee)
+# RAG Document Viewer ![V1.0.2](https://img.shields.io/badge/Version-1.0.2-333.svg?labelColor=eee) ![MIT License](https://img.shields.io/badge/License-MIT-333.svg?labelColor=eee)
 
 **RAG Document Viewer** is an open-source library that generates high-fidelity file previews for seamless integration into your applications. It provides desktop-level file viewing capabilities for a wide range of document formats, including:
 

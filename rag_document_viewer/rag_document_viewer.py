@@ -1,6 +1,6 @@
 import json, re, shutil, warnings
 from subprocess import run
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment
 from pathlib import Path
 
 # Define supported sheet formats for special handling
@@ -280,9 +280,24 @@ class RAG_Document_Viewer:
             x.decompose()
         for x in bs.find_all("script"):
             x.decompose()
+        
+        # Remove all HTML comments
+        for x in bs.find_all(string=lambda text: isinstance(text, Comment)):
+            x.decompose()
+        
+        # Remove unwanted meta tag with specific name
+        meta_tag = bs.find('meta', attrs={'name': 'generator'})
+        if meta_tag:
+            meta_tag.decompose()
 
         # Add compatibility script for older browsers
         bs.find("head").append(bs.new_tag("script", src="compatibility.min.js"))
+
+        # Update title with filename
+        title_tag = bs.find('title')
+        if title_tag:
+            title_tag.string = Path(self._file_name_in).stem
+
         return str(bs)
 
 
@@ -435,10 +450,11 @@ class RAG_Document_Viewer:
             str: Generated CSS content with configured colors and styles
         """
         # Load appropriate CSS template
+        current_dir = Path(__file__).parent
         if self._ext in SHEET_FORMATS:
-            styles = self._read_file_content(Path("./preprocess-custom-styles_sheet.css"))
+            styles = self._read_file_content(current_dir / "preprocess-custom-styles_sheet.css")
         else:
-            styles = self._read_file_content(Path("./preprocess-custom-styles_normal.css"))
+            styles = self._read_file_content(current_dir / "preprocess-custom-styles_normal.css")
         
         # Get color configuration with defaults
         main_color = self._configs.get("main_color", "#ff8000")
@@ -488,10 +504,11 @@ class RAG_Document_Viewer:
             str: JavaScript content with configuration values and box data embedded
         """
         # Load appropriate JavaScript template
+        current_dir = Path(__file__).parent
         if self._ext in SHEET_FORMATS:
-            scripts = self._read_file_content(Path("./preprocess-custom-scripts_sheet.js"))
+            scripts = self._read_file_content(current_dir / "preprocess-custom-scripts_sheet.js")
         else:
-            scripts = self._read_file_content(Path("./preprocess-custom-scripts_normal.js"))
+            scripts = self._read_file_content(current_dir / "preprocess-custom-scripts_normal.js")
         
         # Get feature configuration
         show_single_chunk = self._configs.get("show_chunks_if_single", False) and len(self._boxes) > 0
@@ -540,8 +557,7 @@ class RAG_Document_Viewer:
         Returns:
             float: Contrast ratio (1-21, higher is better contrast)
         """
-        l1, l2 = sorted([self._calculate_color_luminance(rgb1), self._calculate_color_luminance(rgb2)],
-                        reverse=True)
+        l1, l2 = sorted([self._calculate_color_luminance(rgb1), self._calculate_color_luminance(rgb2)], reverse=True)
         return (l1 + 0.05) / (l2 + 0.05)
 
 
