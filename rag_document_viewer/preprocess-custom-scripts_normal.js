@@ -55,11 +55,6 @@ $("#page-container").off('scroll').on('scroll', function () {
         pageNumber = getCurrentPage();
         $("#page-number").html(pageNumber);
     }
-
-    // $('#page-number').fadeIn();
-    // if (navigator.userAgent.match(/Edge/i) || navigator.userAgent.match(/Chrome/i)) {
-    //     $('.zoom').fadeIn();
-    // }
 });
 
 $("#scrollbar").click(function (event) {
@@ -98,6 +93,7 @@ $("#zoom-out").click(function (event) {
 
 $(window).resize(() => {
     handle_right();
+    handle_zooming();
 });
 
 $(window).on("load", (e) => {
@@ -110,9 +106,9 @@ $(window).on("load", (e) => {
         $("#page-number").html(pageNumber);
         $('#page-number').fadeIn();
     }
-    if (navigator.userAgent.match(/Edge/i) || navigator.userAgent.match(/Chrome/i)) {
+    // if (navigator.userAgent.match(/Edge/i) || navigator.userAgent.match(/Chrome/i)) {
         $('.zoom').fadeIn();
-    }
+    // }
     handle_right();
 });
 

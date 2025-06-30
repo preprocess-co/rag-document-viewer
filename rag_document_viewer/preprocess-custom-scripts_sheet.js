@@ -10,11 +10,8 @@ window.show_single_chunk = {#_show_single_chunk_#};
 window.chunks_navigator = {#_chunks_navigator_#};
 window.chunks = {#_boxes_data_#};
 
-if (navigator.userAgent.match(/Edge/i) || navigator.userAgent.match(/Chrome/i)) {
-    $('.zoom').fadeIn();
-}
-
 $(window).on("load", (e) => {
+    $('.zoom').fadeIn();
     $("#sheet_preview").css('zoom', window.zoom);
     window.all_links = $("a", $("#tabs").contents());
     window.all_links.click(

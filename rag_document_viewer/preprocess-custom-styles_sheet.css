@@ -54,14 +54,14 @@
 
 .zoom {
     position: fixed;
-    bottom: 4rem;
+    bottom: 2vh;
     background-color: {#_controls_bg_color_#};
     padding: 5px 0px;
     border-radius: 5px;
     color: {#_controls_text_color_#};
     z-index: 2000;
     font-size: 13px;
-    width: 2.5rem;
+    width: 3vw;
     text-align: center;
     display: none;
     cursor: pointer;
@@ -70,10 +70,10 @@
 
 
 #zoom-in {
-    right: calc(45% - 1.25rem);
+    right: 40vw;
 }
 
 
 #zoom-out {
-    left: calc(45% - 1.25rem);
+    left: 40vw;
 }
