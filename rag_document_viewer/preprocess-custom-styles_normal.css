@@ -15,7 +15,7 @@
 
 *::selection {
     background: unset;
-    background-color: {#_text_selection_color_#};
+    background-color: {#_text_selection_color_#}aa;
 }
 
 

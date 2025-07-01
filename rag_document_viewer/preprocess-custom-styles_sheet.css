@@ -1,6 +1,6 @@
 *::selection {
     background: unset;
-    background-color: {#_text_selection_color_#};
+    background-color: {#_text_selection_color_#}aa;
 }
 
 #sheet_preview {
@@ -54,7 +54,7 @@
 
 .zoom {
     position: fixed;
-    bottom: 2vh;
+    bottom: 7vh;
     background-color: {#_controls_bg_color_#};
     padding: 5px 0px;
     border-radius: 5px;

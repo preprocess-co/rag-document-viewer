@@ -31,14 +31,14 @@ class RAG_Document_Viewer:
     The RAG_Document_Viewer class handles the entire pipeline from document conversion
     to final HTML preview generation, including asset management and cleanup operations.
     """
-    def __init__(self, filepath, distpath=None, boxes: list[list[dict]] = None, configs={}):
+    def __init__(self, filepath, distpath=None, chunks: list[list[dict]] = None, configs={}):
         """
         Initialize the document viewer converter.
         
         Args:
             filepath (str): Path to the input document file
             distpath (str, optional): Output directory path. Defaults to input file directory
-            boxes (list[list[dict]]): List of bounding box information for chunk highlighting
+            chunks (list[list[dict]]): List of bounding box information for chunk highlighting
             configs (dict): Configuration options for styling and features
         """
         # Convert string paths to Path objects
@@ -48,10 +48,10 @@ class RAG_Document_Viewer:
         self._file_name_in = self._path_in.name
         self._configs = configs
         
-        # Boxes are required for RAG functionality - they define chunk boundaries
-        if boxes is None:
-            raise Exception("Please pass a boxes info to build the previewer.")
-        self._boxes = boxes
+        # Chunks are required for RAG functionality - they define chunk boundaries
+        if chunks is None:
+            raise Exception("Please pass a chunks' boxes info to build the previewer.")
+        self._chunks = chunks
         
         self._ext = self._path_in.suffix
         
@@ -205,6 +205,14 @@ class RAG_Document_Viewer:
             if css_content == "" or html_content == "":
                 return
             
+            # Replace transparent color values with unset in CSS class selectors
+            # Targets patterns like ".fc123{color:transparent;}" and changes them to ".fc123{color:unset;}"
+            regex = r"(\.fc[0-9]+{color:)(transparent)(;})"
+            subst = r"\1unset\3"
+            css_content = re.sub(regex, subst, css_content, 0, re.MULTILINE)
+            self._write_file_content(css, css_content)
+
+
             # Clean and enhance HTML content
             html_content = self._remove_unwanted_elements(html_content)
             html_content = self._inject_ui_components(html_content)
@@ -354,7 +362,7 @@ class RAG_Document_Viewer:
 
         # Fix asset links in the main HTML file
         self._update_asset_links(self._path / "index.html")
-        
+
 
     def _get_output_file_paths(self) -> tuple[Path, Path]:
         """
@@ -413,7 +421,7 @@ class RAG_Document_Viewer:
         elements = """<div id="scrollbar"><div id="scroller"></div></div>"""
         
         # Add chunk navigation controls if enabled
-        if self._configs.get("chunks_navigator", True) and len(self._boxes) > 0:
+        if self._configs.get("chunks_navigator", True) and len(self._chunks) > 0:
             chunk_navigator_text = self._configs.get("chunk_navigator_text", "Chunks %d of %d")
             chunk_navigator_text = [x.strip() for x in chunk_navigator_text.split("%d") if len(x.strip()) > 0]
             if len(chunk_navigator_text) < 2:
@@ -511,10 +519,10 @@ class RAG_Document_Viewer:
             scripts = self._read_file_content(current_dir / "preprocess-custom-scripts_normal.js")
         
         # Get feature configuration
-        show_single_chunk = self._configs.get("show_chunks_if_single", False) and len(self._boxes) > 0
-        chunks_navigator = self._configs.get("chunks_navigator", True) and len(self._boxes) > 0
+        show_single_chunk = self._configs.get("show_chunks_if_single", False) and len(self._chunks) > 0
+        chunks_navigator = self._configs.get("chunks_navigator", True) and len(self._chunks) > 0
         page_number = self._configs.get("page_number", True)
-        scrollbar_bookmarks = self._configs.get("scrollbar_navigator", True) and len(self._boxes) > 0
+        scrollbar_bookmarks = self._configs.get("scrollbar_navigator", True) and len(self._chunks) > 0
 
         # Replace placeholders in JavaScript template with configuration values
         scripts = scripts.replace("{#_show_single_chunk_#}", str(show_single_chunk).lower())
@@ -523,9 +531,9 @@ class RAG_Document_Viewer:
         scripts = scripts.replace("{#_scrollbar_bookmarks_#}", str(scrollbar_bookmarks).lower())
         
         # Embed box data as JSON for chunk highlighting functionality
-        scripts = scripts.replace("{#_boxes_data_#}", json.dumps(self._boxes))
+        scripts = scripts.replace("{#_boxes_data_#}", json.dumps(self._chunks))
 
-        return scripts    
+        return scripts
 
 
     def _calculate_color_luminance(self, rgb: tuple[int, int, int]) -> float:
@@ -664,27 +672,33 @@ class RAG_Document_Viewer:
         # Get color configuration for styling, with defaults
         main_color = self._configs.get("main_color", "#ff8000")        # Orange default
         gray_color = self._configs.get("background_color", "#dddddd")   # Light gray default
+        tint_main, shade_main = self._create_color_palette(main_color, 12)
+
+        # Parse the HTML content using BeautifulSoup
+        bs = BeautifulSoup(content, "html.parser")
         
-        # Extract sheet names from HTML anchors - these become tab labels
-        # Looks for patterns like <a href="#table...>Sheet Name</a>
-        sheet_names = re.findall(r"<a href=\"#table.*>(.*)</a>", content, re.MULTILINE|re.IGNORECASE)
-        
-        # Find the start positions of each table by locating anchor tags
-        # Pattern matches <a name="table...></a> which marks table beginnings
-        starts = re.finditer(r"<a name=\"table.*</a>", content, re.MULTILINE|re.IGNORECASE)
-        
-        # Find the end positions of each table by locating HTML comments
-        # Tables typically end with <!-- comments in LibreOffice HTML output
-        ends = re.finditer(r"<!--", content, re.MULTILINE|re.IGNORECASE)
-        
-        # Convert iterators to lists of positions for table extraction
-        table_starts = [match.end() for matchNum, match in enumerate(starts, start=1)]
-        table_ends = [match.start() for matchNum, match in enumerate(ends, start=1)]
-        
+        # Find all anchor tags with href starting with '#table' and extract their text content as sheet name
+        sheet_names = [x.get_text() for x in bs.find_all('a', href=lambda x: x and x.startswith('#table'))]
+
+        # Find all table tags with specific cellspacing and border attributes that represent sheet content
+        sheet_contents = bs.find_all('table', {'cellspacing': '0', 'border': '0'})
+
+        # Check if no sheets were found and handle edge case
+        if len(sheet_names) == 0 and len(sheet_contents) == 0:
+            # Set default sheet name
+            sheet_names = ["Sheet_1"]
+            # Extract all content from body tag without the body tag itself
+            sheet_contents = [''.join(str(tag) for tag in bs.body.contents)]
+
         # Build the tabstrip HTML - this creates the navigation tabs at the bottom
         # Contains styling for the tab appearance and behavior
         tabs = """<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"/>
                     <style>
+                        *::selection {
+                            background: unset;
+                            background-color: {#_text_selection_color_#};
+                        }
+
                         a {
                             text-decoration: none;
                             color: #000000;
@@ -712,36 +726,46 @@ class RAG_Document_Viewer:
                     </style></head><body><table border="0" cellspacing="1"><tr>"""
         
         # Replace color placeholders with actual configured colors
+        tabs = tabs.replace("{#_text_selection_color_#}", self._configs.get("text_selection_color", tint_main[2]))
         tabs = tabs.replace("{#_bookmark_#}", self._configs.get("bookmark_color", main_color))
         tabs = tabs.replace("{#_bg_color_#}", self._configs.get("background_color", gray_color))
         tabs = tabs.replace("{#_td_bg_color_#}", self._configs.get("td_background_color", "#fff"))
         tabs = tabs.replace("{#_td_color_#}", self._configs.get("td_color", "#000"))
-        tabs = tabs.replace("{#_td_color_#}", self._configs.get("td_color", "#000"))
         
         # Track the first sheet name to set as default view
         _1st_sheet = ""
-        
-        # Process each sheet: extract table content and create individual HTML files
-        for i, sheet_name in enumerate(sheet_names):
-            # Extract the HTML content for this specific table using start/end positions
-            table_content = content[table_starts[i]:table_ends[i]]
+
+        # Process each sheet content and create individual HTML files
+        for i, sheet_content in enumerate(sheet_contents):
+            
+            # Get sheet name from extracted names or generate default
+            sheet_name = sheet_names[i] if i < len(sheet_names) else f"Sheet_{(i+1)}"
+            sheet = f"{sheet_name.lower()}.html"
+
+            # Set first sheet as default for iframe src
+            if _1st_sheet == "":
+                _1st_sheet = sheet
+
+            # Update image source paths to point to the reorganized images directory
+            for x in sheet_content.find_all("img"):
+                x['src'] = f"../images/{x['src']}"
+                
+            # Convert sheet content to formatted HTML string
+            table_content = sheet_content.prettify()
             
             # Add basic Arial font styling to the extracted table
-            table_content = "<style>* {font-family: Arial;}</style>" + table_content
-            
-            # Parse the HTML and fix image source paths to point to assets/images/
-            bs = BeautifulSoup(table_content, "html.parser")
-            for x in bs.find_all("img"):
-                x['src'] = f"../images/{x['src']}"
-            
-            # Create filename for this sheet (lowercase with .html extension)
-            sheet = f"{sheet_name.lower()}.html"
-            if _1st_sheet == "": 
-                _1st_sheet = sheet  # Remember first sheet for default loading
+            table_content = f"""<style>
+                * {{font-family: Arial;}}
+                *::selection {{
+                    background: unset;
+                    background-color: {tint_main[2]};
+                }}
+            </style>
+            """ + table_content
             
             # Save the individual sheet HTML file
             table_filepath = sheets_dir / sheet
-            self._write_file_content(table_filepath, bs.prettify())
+            self._write_file_content(table_filepath, table_content)
             
             # Add a tab button to the tabstrip for this sheet
             tabs += f"""<td nowrap><a href="{sheet}" target="sheet_preview">{sheet_name.upper()}</a></td>"""
@@ -767,7 +791,7 @@ class RAG_Document_Viewer:
         
         # Add chunk navigation controls if enabled in configuration
         # This provides previous/next buttons for navigating between chunks
-        if self._configs.get("chunks_navigator", True) and len(self._boxes) > 0:
+        if self._configs.get("chunks_navigator", True) and len(self._chunks) > 0:
             # Parse the chunk navigator text template, splitting on %d placeholders
             chunk_navigator_text = self._configs.get("chunk_navigator_text", "Chunks %d of %d")
             chunk_navigator_text = [x.strip() for x in chunk_navigator_text.split("%d") if len(x.strip()) > 0]
@@ -823,7 +847,7 @@ class RAG_Document_Viewer:
                 # Remove any other unexpected files
                 file_path.unlink()
 
-def RAG_DV(file_path:str=None, store_path:str=None, boxes:list=[], **kwargs):
+def RAG_DV(file_path:str=None, store_path:str=None, chunks:list=[], **kwargs):
     """
     RAG_DV function - Wrapper for RAG_Document_Viewer.
 
@@ -840,7 +864,7 @@ def RAG_DV(file_path:str=None, store_path:str=None, boxes:list=[], **kwargs):
                                     will be stored. Defaults to None, in which case
                                     it creates a new directory named after the input file's
                                     stem within the input file's parent directory.
-        boxes (list, optional): A list of bounding box information (dictionaries).
+        chunks (list, optional): A list of bounding box information (dictionaries).
                                 This is essential for the RAG functionality, as these
                                 boxes define the boundaries of document "chunks" that
                                 can be highlighted in the preview. Defaults to an empty list.
@@ -854,7 +878,7 @@ def RAG_DV(file_path:str=None, store_path:str=None, boxes:list=[], **kwargs):
                          accidental overwriting.
 
     Warns:
-        UserWarning: If the `boxes` list is empty, indicating that no chunks
+        UserWarning: If the `chunks` list is empty, indicating that no chunks
                      will be highlighted in the generated preview.
     """
     # Check if a file path is provided; raise an error if not.
@@ -884,10 +908,10 @@ def RAG_DV(file_path:str=None, store_path:str=None, boxes:list=[], **kwargs):
         # If the directory already exists, raise an error to prevent overwriting.
         raise FileExistsError(f"[{store_path}] already exist, please check.")
 
-    # Check if the boxes list is empty. If so, issue a warning as chunk highlighting
+    # Check if the chunks list is empty. If so, issue a warning as chunk highlighting
     # will not occur without this information.
-    if len(boxes) == 0:
-        warnings.warn("The boxes length is empty, so there is no chunks will be highlited.")
+    if len(chunks) == 0:
+        warnings.warn("The chunks length is empty, so there is no chunks will be highlited.")
 
     # Initialize an empty dictionary to store configuration options.
     configs = {}
@@ -896,6 +920,6 @@ def RAG_DV(file_path:str=None, store_path:str=None, boxes:list=[], **kwargs):
         configs[key] = value
 
     # Create an instance of the RAG_Document_Viewer class with the gathered parameters.
-    ragdv = RAG_Document_Viewer(file_path, store_path, boxes, configs)
+    ragdv = RAG_Document_Viewer(file_path, store_path, chunks, configs)
     # Start the document conversion process.
     ragdv.convert_document()
