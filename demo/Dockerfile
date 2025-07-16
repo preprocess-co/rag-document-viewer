@@ -36,12 +36,12 @@ RUN wget "https://raw.githubusercontent.com/preprocess-co/rag-document-viewer/re
 RUN chmod +x install.sh && ./install.sh
 
 # Copy Python requirements and install dependencies
-RUN wget "https://raw.githubusercontent.com/preprocess-co/rag-document-viewer/refs/heads/main/demo/install.txt"
+RUN wget "https://raw.githubusercontent.com/preprocess-co/rag-document-viewer/refs/heads/main/demo/install.txt" -O ./install.txt
 # COPY install.txt install.txt
 RUN pip3 install --no-cache-dir --upgrade -r install.txt
 
 # Copy application code
-RUN wget "https://raw.githubusercontent.com/preprocess-co/rag-document-viewer/refs/heads/main/demo/server.py"
+RUN wget "https://raw.githubusercontent.com/preprocess-co/rag-document-viewer/refs/heads/main/demo/server.py" -O ./server.py
 # COPY server.py server.py
 
 # Run the application
