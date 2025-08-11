@@ -58,8 +58,8 @@
 
 .highlight.text {
     background-image: {#_highlight_chunk_color_#};
-    padding: 0.2rem;
-    margin: -0.2rem;
+    padding: 0.05rem;
+    margin: -0.05rem;
 }
 
 .disabled {

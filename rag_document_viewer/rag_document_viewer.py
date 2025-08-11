@@ -495,7 +495,7 @@ class RAG_Document_Viewer:
         styles = styles.replace("{#_highlight_page_outline_#}", self._configs.get("highlight_page_outline", tint_main[1]))
         
         # Create gradient styles for highlighting
-        highlight_chunk_color = f"linear-gradient(100deg, {tint_main[-2]}, {tint_main[-1]}, {tint_main[-2]})"
+        highlight_chunk_color = f"linear-gradient(100deg, {main_color}30, {main_color}40, {main_color}30)"
         highlight_page_color = f"linear-gradient(100deg, {tint_main[-2]}aa, {tint_main[-1]}aa, {tint_main[-2]}aa, {tint_main[-1]}aa, {tint_main[-2]}aa)"
 
         styles = styles.replace("{#_highlight_page_color_#}", self._configs.get("highlight_page_color", highlight_page_color))
