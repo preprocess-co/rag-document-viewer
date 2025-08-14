@@ -25,12 +25,17 @@ The library converts these files into interactive HTML-based previews that can b
 
 **Viewer features:**
 
+![RAG Document Viewer Demo](previewer.png)
+
 1.  **Chunk Navigator**: Navigate between highlighted chunks with next/previous controls.
 2.  **Zoom Controls**: Renders the document at the optimal zoom level, and users can zoom in/out as needed.
 3.  **Scrollbar Navigator**: Visual indicators on the scrollbar show highlighted chunk positions; click to jump to a specific chunk.
 4.  **Chunks Highlighting** - Visual emphasis of the important content part you select.
 
-![RAG Document Viewer Demo](previewer.png)
+**Demo:**
+We've created a [demo on Hugging Face](https://preprocess-rag-dv-demo.hf.space/) that lets you see the results you can achieve with your documents.
+> **The demo doesn't have chunk highlighting functionality.**
+> For that feature, you'll need to use a supported provider like [preprocess.co](https://preprocess.co) for document chunking.
 
 ---
 
